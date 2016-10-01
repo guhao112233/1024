@@ -10,9 +10,9 @@ import urllib2
 from PIL import Image
 from StringIO import StringIO
 
-picUrl = "http://cl.wecl.biz/thread0806.php?fid=16"
-basePicUrl = "http://cl.wecl.biz/"
-fileName = "/Users/guhao/workspace/py_work/file"
+picUrl = "http://cl.vgtr.biz/thread0806.php?fid=16"
+basePicUrl = "http://cl.vgtr.biz/"
+fileName = "/workspace/py_work/file"
 headers = {
     "Accept":"text/html,application/xhtml+xml,application/xml; " \
         "q=0.9,image/webp,*/*;q=0.8",
@@ -25,6 +25,7 @@ headers = {
 
 
 
+
 def searchPicPage():
     count =0
     session = requests.session()
@@ -32,6 +33,7 @@ def searchPicPage():
     r = session.get(picUrl)
     r.encoding = "gbk"
     html = r.text
+
     soup = BeautifulSoup(html)
     divs = soup.find_all("div", class_="t")
     soupdiv = BeautifulSoup(str(divs[1]))
@@ -39,6 +41,7 @@ def searchPicPage():
         soupa = BeautifulSoup(str(a))
         attrs = soupa.a.attrs
         thisPicUrl = basePicUrl + attrs["href"]
+        print(thisPicUrl)
         searchPicDown(thisPicUrl, session)
         count +=1
         if count >=100:
@@ -46,6 +49,7 @@ def searchPicPage():
 
 
 def searchPicDown(url, session):
+
     r= session.get(url)
     r.encoding = "gbk"
     soup = BeautifulSoup(r.text)
@@ -53,11 +57,20 @@ def searchPicDown(url, session):
         image = BeautifulSoup(str(img))
         image_url = image.input.attrs["src"]
         # print(image_url)
-        response = session.get(image_url, stream=True, timeout=20)
+        try:
+            response = session.get(image_url, stream=True, timeout=2)
+        except:
+            pass
+        # response.
         # r_image = response.content
+        print(image_url)
         suffix = image_url.split('.')[-1]
         filename = str(datetime.datetime.now().strftime('%Y%m%d%H%M%S')) + str(datetime.datetime.now().microsecond) + "."+suffix
-        urllib.urlretrieve(image_url,createFileWithFileName(fileName, filename))
+        print(filename)
+        try:
+            urllib.urlretrieve(image_url,createFileWithFileName(fileName, filename))
+        except:
+            pass
 
 
 def createFileWithFileName(localPathParam, fileName):
